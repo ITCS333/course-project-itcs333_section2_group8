@@ -1,65 +1,40 @@
-<!--
-  Requirement: Create the Course Homepage
-
-  Instructions:
-  This page will serve as the main entry point to the course website.
-  It should contain a simple navigation menu with links to all the key pages.
--->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
-    
-    <!-- TODO: Add the responsive 'viewport' meta tag. -->
-
-    <!-- TODO: Add a title, e.g., "Web Dev Course Homepage". -->
-
-    <!-- TODO: Link to your CSS framework or stylesheet. -->
-</head>
-<body>
-
-    <!-- TODO: Create a 'header' with a main heading ('h1') like "Welcome to the Web Development Course". -->
-
-    <!-- TODO: Create the 'main' content area. -->
-
-        <!-- TODO: Create a 'nav' element to hold the site navigation. -->
-            <!-- TODO: Add a sub-heading ('h2') "Site Navigation". -->
-
-            <!-- TODO: Create an unordered list ('ul') to hold the links. -->
-
-                <!-- Section: General -->
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Login page.
-                     - Text: "Login" -->
-
-                <!-- Section: Admin Pages -->
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Portal.
-                     - Text: "Admin Portal (Manage Students)" -->
-                
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Resources page.
-                     - Text: "Admin: Manage Resources" -->
-
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Weekly Breakdown page.
-                     - Text: "Admin: Manage Weekly Breakdown" -->
-
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Assignments page.
-                     - Text: "Admin: Manage Assignments" -->
-
-                <!-- Section: Student Pages -->
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Student Resources page.
-                     - Text: "View Course Resources" -->
-
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Student Weekly Breakdown page.
-                     - Text: "View Weekly Breakdown" -->
-
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Student Assignments page.
-                     - Text: "View Assignments" -->
-              
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Discussion Board.
-                     - Text: "General Discussion Board" -->
-
-            <!-- End of the unordered list. -->
-        <!-- End of the 'nav' element. -->
-
-    <!-- End of 'main'. -->
-</body>
+     <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Web Dev Course Homepage</title>
+          <link rel="stylesheet" href="sayed.css">
+     </head>
+     <body>
+          <header>
+               <h1>Welcome to the Web Development Course</h1>
+          </header>
+          <main>
+               <section>
+                    <h2>About This Course</h2>
+                    <p>
+                         This course introduces the fundamentals of web development, including HTML, CSS, and JavaScript. Students will learn how to design, structure, and style web pages effectively.
+                    </p>
+               </section>
+               <nav aria-label="Main navigation">
+                    <h2>Site Navigation</h2>
+                    <ul>
+                         <li><a href="login.html">Login</a></li>
+                         <li><a href="admin_portal.html">Admin Portal (Manage Students)</a></li>
+                         <li><a href="admin_resources.html">Admin: Manage Resources</a></li>
+                         <li><a href="admin_weekly_breakdown.html">Admin: Manage Weekly Breakdown</a></li>
+                         <li><a href="admin_assignments.html">Admin: Manage Assignments</a></li>
+                         <li><a href="student_resources.html">View Course Resources</a></li>
+                         <li><a href="student_weekly_breakdown.html">View Weekly Breakdown</a></li>
+                         <li><a href="student_assignments.html">View Assignments</a></li>
+                         <li><a href="discussion_board.html">General Discussion Board</a></li>
+                    </ul>
+               </nav>
+          </main>
+          <footer>
+               <p>&copy; 2025 Web Development Course | University of Bahrain</p>
+          </footer>
+          <script src="sayed.js"></script>
+     </body>
 </html>
