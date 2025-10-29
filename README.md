@@ -3,8 +3,16 @@
 # ITCS### Course Page
 
 ## The names and student IDs of all team members.
-Husain Nabeel Alsehlawi </br>
+Husain Nabeel Alsehlawi - 202108519</br>
 Sayed Ali Adnan - 202109837 </br>
+MOHAMED ABDULREDHA - 202209027 </br>
+MAHMOOD ALAA - 202107304 
 ## A table indicating which student was responsible for which task.
+| Student Name     | Task Assigned           |
+|------------------|--------------------------|
+| Husain Alsehlawi      | 2 |
+| MAHMOOD ALAA          | 4 |
+| SAYED ALI ADNAN       | 1 |
+| MOHAMED ABDULREDHA    | 3 |
 
 ## A link to your live, hosted application on Replit.
