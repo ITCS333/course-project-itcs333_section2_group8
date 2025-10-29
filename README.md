@@ -12,7 +12,7 @@ MAHMOOD ALAA - 202107304
 |------------------|--------------------------|
 | Husain Alsehlawi      | 2 |
 | MAHMOOD ALAA          | 4 |
-| SAYED ALI ADNAN       | 1 |
-| MOHAMED ABDULREDHA    | 3 |
+| SAYED ALI ADNAN       | 3 |
+| MOHAMED ABDULREDHA    | 1 |
 
 ## A link to your live, hosted application on Replit.
