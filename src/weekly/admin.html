@@ -11,26 +11,53 @@
     <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
     <meta charset="UTF-8">
     <!-- TODO: Add the responsive 'viewport' meta tag. -->
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- TODO: Add a title, e.g., "Manage Weekly Breakdown". -->
-
+    <title>Manage Weekly Breakdown</title>
     <!-- TODO: Link to your CSS framework or stylesheet. -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <!-- TODO: Create a 'header' with a main heading ('h1') "Manage Weekly Breakdown". -->
-
+    <header>
+        <h1>Manage Weekly Breakdown</h1>
+    </header>
     <!-- TODO: Create the 'main' content area. -->
+    <main>
 
         <!-- Section 1: Add/Edit Week Form -->
+         <section>
+            <h2>Add a New Week</h2>
+            <form id="week-form" action="#">
+                <fieldset>
+                    <legend>Weekly Details</legend>
+
         <!-- TODO: Create a 'section' for the form. -->
             <!-- TODO: Add a sub-heading ('h2') "Add a New Week". -->
+             <label for="week-title">Week Title:</label>
+                    <input id="week-title" type="text" required placeholder="Week 1: Introduction to HTML">
 
             <!-- TODO: Create a 'form' with an id "week-form". Action can be '#'. -->
+
                 <!-- TODO: Use a 'fieldset' to group the form controls. -->
                     <!-- TODO: Add a 'legend', e.g., "Weekly Details". -->
+                     <label for="week-start-date">Starting Date:</label>
+                    <input id="week-start-date" type="date" required>
+                    
+                     <label for="week-description">Description and Notes:</label>
+                    <textarea id="week-description" rows="5"></textarea>
+                        <label for="week-links">Links to Exercises/Resources (one per line):</label>
+                    <textarea id="week-links" rows="3"></textarea>
+                        <button id="add-week" type="submit">Add Week</button>
 
+                              </fieldset>
+            </form>
+
+        </section>
+                        
                     <!-- TODO: Add a 'label' and 'input' for the week's title.
+
                          - label 'for': "week-title"
                          - input 'id': "week-title", type="text", required
                          - Example placeholder: "Week 1: Introduction to HTML" -->
@@ -55,6 +82,40 @@
 
 
         <!-- Section 2: Existing Weekly Entries -->
+        <section>
+            <h2>Current Weekly Breakdown</h2>
+            <table id="weeks-table">
+                <thead>
+                    <tr>
+                        <th>Week Title</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Week 1: Intro to HTML</td>
+                        <td>This week covers the basics of HTML structure and elements.</td>
+                        <td>
+                            <button>Edit</button>
+                            <button>Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Week 2: CSS Fundamentals</td>
+                        <td>This week focuses on styling with CSS, including selectors and properties.</td>
+                        <td>
+                            <button>Edit</button>
+                            <button>Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+          </main>
+
+</body>
+</html>
         <!-- TODO: Create a 'section' to display the list of current weeks. -->
             <!-- TODO: Add a sub-heading ('h2') "Current Weekly Breakdown". -->
 
