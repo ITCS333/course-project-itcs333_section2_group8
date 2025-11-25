@@ -62,12 +62,11 @@ async function loadAssignments() {
     listSection.innerHTML = '';
     assignments.forEach(assignment => {
       const article = createAssignmentArticle(assignment);
-      listSection.appendChild(article);
-    }
+      listSection.appendChild(article);    });
   } catch (error) {
     console.error('Error loading assignments:', error);
-  }
-  listSection.innerHTML = '<p>Error loading assignments. Please try again later.</p>';
+    listSection.innerHTML = '<p>Error loading assignments. Please try again later.</p>';
+    }
 }
 
 // --- Initial Page Load ---
