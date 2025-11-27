@@ -18,18 +18,19 @@ let students = [];
 // the HTML document is parsed before this script runs.
 
 // TODO: Select the student table body (tbody).
+const studentTableBody = document.querySelector("#student-table tbody");
 
 // TODO: Select the "Add Student" form.
 // (You'll need to add id="add-student-form" to this form in your HTML).
-
+const addStudentForm = document.getElementById("add-student-form");
 // TODO: Select the "Change Password" form.
 // (You'll need to add id="password-form" to this form in your HTML).
-
+const changePasswordForm = document.getElementById("password-form");
 // TODO: Select the search input field.
 // (You'll need to add id="search-input" to this input in your HTML).
-
+const searchInput = document.getElementById("search-input");
 // TODO: Select all table header (th) elements in thead.
-
+const tableHeaders = document.querySelectorAll("#student-table thead th");
 // --- Functions ---
 
 /**
@@ -45,6 +46,17 @@ let students = [];
  */
 function createStudentRow(student) {
   // ... your implementation here ...
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${student.name}</td>
+    <td>${student.id}</td>
+    <td>${student.email}</td>
+    <td>
+      <button class="edit-btn" data-id="${student.id}">Edit</button>
+      <button class="delete-btn" data-id="${student.id}">Delete</button>
+    </td>
+  `;
+  return tr;
 }
 
 /**
@@ -57,6 +69,12 @@ function createStudentRow(student) {
  */
 function renderTable(studentArray) {
   // ... your implementation here ...
+  studentTableBody.innerHTML = "";
+
+  studentArray.forEach(student => {
+    const row = createStudentRow(student);
+    studentTableBody.appendChild(row);
+  });
 }
 
 /**
@@ -73,7 +91,22 @@ function renderTable(studentArray) {
  */
 function handleChangePassword(event) {
   // ... your implementation here ...
+    event.preventDefault();
+  const current = document.getElementById("current-password");
+  const newPass = document.getElementById("new-password");
+  const confirm = document.getElementById("confirm-password");
+  if (newPass.value.length < 8) {
+    alert("Password must be at least 8 characters.");
+    return; }
+  if (newPass.value !== confirm.value) {
+    alert("Passwords do not match.");
+    return;}
+  alert("Password updated successfully!");
+  current.value = "";
+  newPass.value = "";
+  confirm.value = "";
 }
+
 
 /**
  * TODO: Implement the handleAddStudent function.
@@ -92,6 +125,28 @@ function handleChangePassword(event) {
  */
 function handleAddStudent(event) {
   // ... your implementation here ...
+   event.preventDefault();
+  const name = document.getElementById("student-name");
+  const id = document.getElementById("student-id");
+  const email = document.getElementById("student-email");
+  const defaultPassword = document.getElementById("default-password");
+  if (!name.value || !id.value || !email.value) {
+    alert("Please fill out all required fields.");
+    return;}
+    const exists = students.some(s => s.id === id.value);
+  if (exists) {
+    alert("A student with this ID already exists.");
+    return;}
+  const newStudent = {
+    name: name.value,
+    id: id.value,
+    email: email.value};
+  students.push(newStudent);
+  renderTable(students);
+  name.value = "";
+  id.value = "";
+  email.value = "";
+  defaultPassword.value = "";
 }
 
 /**
@@ -107,7 +162,48 @@ function handleAddStudent(event) {
  */
 function handleTableClick(event) {
   // ... your implementation here ...
-}
+  const target = event.target;
+  if (target.classList.contains("delete-btn")) {
+    const studentId = target.dataset.id;
+    students = students.filter(s => s.id !== studentId);
+    renderTable(students);}
+
+  if (target.classList.contains("edit-btn")) {
+    const studentId = target.dataset.id;
+    const row = target.closest("tr");
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+    row.innerHTML = `
+      <td><input type="text" class="edit-name" value="${student.name}"></td>
+      <td>${student.id}</td>
+      <td><input type="email" class="edit-email" value="${student.email}"></td>
+      <td>
+        <button class="save-btn" data-id="${student.id}">Save</button>
+        <button class="cancel-btn" data-id="${student.id}">Cancel</button>
+      </td>
+    `;
+  }
+  if (target.classList.contains("save-btn")) {
+    const studentId = target.dataset.id;
+    const row = target.closest("tr");
+    const nameInput = row.querySelector(".edit-name");
+    const emailInput = row.querySelector(".edit-email");
+
+    if (!nameInput.value || !emailInput.value) {
+      alert("Name and Email cannot be empty.");
+      return;
+    }
+
+    const student = students.find(s => s.id === studentId);
+    student.name = nameInput.value;
+    student.email = emailInput.value;
+
+    renderTable(students);
+  }
+   if (target.classList.contains("cancel-btn")) {
+    renderTable(students);
+  }
+  
 
 /**
  * TODO: Implement the handleSearch function.
@@ -122,6 +218,13 @@ function handleTableClick(event) {
  */
 function handleSearch(event) {
   // ... your implementation here ...
+  const term = searchInput.value.toLowerCase();
+  if (!term.trim()) {
+    renderTable(students);
+    return;}
+  const filtered = students.filter(s =>
+    s.name.toLowerCase().includes(term));
+  renderTable(filtered);
 }
 
 /**
@@ -140,6 +243,25 @@ function handleSearch(event) {
  */
 function handleSort(event) {
   // ... your implementation here ...
+  const th = event.currentTarget;
+  const columnIndex = th.cellIndex;
+  let key = "";
+  if (columnIndex === 0) key = "name";
+  if (columnIndex === 1) key = "id";
+  if (columnIndex === 2) key = "email";
+  if (columnIndex === 3) return;
+  let direction = th.dataset.sortDir === "asc" ? "desc" : "asc";
+  th.dataset.sortDir = direction;
+  students.sort((a, b) => {
+    if (key === "id") {
+      return direction === "asc"
+        ? Number(a.id) - Number(b.id)
+        : Number(b.id) - Number(a.id);
+    }
+    return direction === "asc"
+      ? a[key].localeCompare(b[key])
+      : b[key].localeCompare(a[key]); });
+renderTable(students);
 }
 
 /**
@@ -160,7 +282,34 @@ function handleSort(event) {
  */
 async function loadStudentsAndInitialize() {
   // ... your implementation here ...
+try {
+    const response = await fetch("students.json");
+
+    if (!response.ok) {
+      console.error("Failed to load students.json");
+      return;}
+
+    students = await response.json();
+    renderTable(students);}
+     catch (err) {
+    console.error("Error loading students:", err);}
+
+  if (changePasswordForm)
+    changePasswordForm.addEventListener("submit", handleChangePassword);
+
+  if (addStudentForm)
+    addStudentForm.addEventListener("submit", handleAddStudent);
+
+  studentTableBody.addEventListener("click", handleTableClick);
+
+  if (searchInput)
+    searchInput.addEventListener("input", handleSearch);
+
+  tableHeaders.forEach(th => {
+    th.addEventListener("click", handleSort);
+  });
 }
+
 
 // --- Initial Page Load ---
 // Call the main async function to start the application.
