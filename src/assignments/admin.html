@@ -26,9 +26,10 @@
     <!-- TODO: Create a 'header' with a main heading ('h1') "Manage Assignments". -->
     <header>
         <h1>Manage Assignments</h1>
+    </header>
 
     <!-- TODO: Create the 'main' content area. -->
-    </header>
+    <main>
 
         <!-- Section 1: Add/Edit Assignment Form -->
         <!-- TODO: Create a 'section' for the form. -->
@@ -47,26 +48,26 @@
                          - label 'for': "assignment-title"
                          - input 'id': "assignment-title", type="text", required -->
                             <label for="assignment-title">Title:</label>
-                            <input id="assignment-title" type="text" required>
+                            <input id="assignment-title" name="title" type="text" required>
 
                     <!-- TODO: Add a 'label' and 'textarea' for the description.
                          - label 'for': "assignment-description"
                          - textarea 'id': "assignment-description", rows="5", required -->
                             <label for="assignment-description">Description:</label>
-                            <textarea id="assignment-description" rows="5" required></textarea>
+                            <textarea id="assignment-description" name="description" rows="5" required></textarea>
 
 
                     <!-- TODO: Add a 'label' and 'input' for the due date.
                          - label 'for': "assignment-due-date"
                          - input 'id': "assignment-due-date", type="date", required -->
                             <label for="assignment-due-date">Due Date:</label>
-                            <input id="assignment-due-date" type="date" required>
+                            <input id="assignment-due-date" name="due-date" type="date" required>
                     
-                    <!-- TODO: Add a 'label' and 'textarea' for attached files or links (one per line).
+                    <!-- TODO: Add a 'label' and 'input' for attached files.
                          - label 'for': "assignment-files"
-                         - textarea 'id': "assignment-files", rows="3" -->
-                            <label for="assignment-files">Attached Files/Links (one per line):</label>
-                            <textarea id="assignment-files" rows="3"></textarea>
+                         - input 'id': "assignment-files", type="file", multiple -->
+                            <label for="assignment-files">Attached Files:</label>
+                            <input id="assignment-files" name="files" type="file" multiple>
                     <!-- TODO: Add a 'button' to submit the form.
                          - id="add-assignment", type="submit", Text: "Add Assignment" -->
                             <button id="add-assignment" type="submit">Add Assignment</button>
@@ -97,7 +98,7 @@
                     </thead>
 
                 <!-- TODO: Create a 'tbody' for the data. -->
-                    <tbody>
+                    <tbody id="assignments-tbody">
 
                     <!-- TODO: Add 1-2 rows of dummy data to see the structure. -->
                                 <tr>
@@ -105,8 +106,8 @@
                         <td>HTML Basics</td>
                         <td>2025-09-16</td>
                         <td>
-                            <button>Edit</button>
-                            <button>Delete</button>
+                            <button class="edit-btn" data-id="asg_1">Edit</button>
+                            <button class="delete-btn" data-id="asg_1">Delete</button>
                         </td>
                     <!-- TODO: Create a 'tr' for the first assignment. -->
                     </tr>
@@ -119,8 +120,8 @@
                                 <td>2025-09-15</td>
                                 <td>
                                     <!-- TODO: Add an "Edit" button. -->
-                                    <button>Edit</button>
-                                    <button>Delete</button>
+                                    <button class="edit-btn" data-id="asg_2">Edit</button>
+                                    <button class="delete-btn" data-id="asg_2">Delete</button>
                                 </td>
                             </tr>
                             

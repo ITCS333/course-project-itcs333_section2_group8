@@ -44,7 +44,7 @@ function createAssignmentRow(assignment) {
   row.appendChild(titleCell);
 
   const dueDateCell = document.createElement('td');
-  dueDateCell.textContent = assignment.dueDate;
+  dueDateCell.textContent = assignment.dueDate || assignment['due-date'] || '';
   row.appendChild(dueDateCell);
 
   const actionsCell = document.createElement('td');
@@ -109,7 +109,7 @@ function handleAddAssignment(event) {
     title,
     description,
     dueDate,
-    files
+    files: Array.from(files).map(f => f.name)
   };
 
   assignments.push(newAssignment);

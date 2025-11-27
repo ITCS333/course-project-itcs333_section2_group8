@@ -57,16 +57,17 @@ function createAssignmentArticle(assignment) {
 async function loadAssignments() {
   // ... your implementation here ...
   try {
-    const response = await fetch('assignments.json');
+    const response = await fetch('api/assignments.json');
     const assignments = await response.json();
     listSection.innerHTML = '';
     assignments.forEach(assignment => {
       const article = createAssignmentArticle(assignment);
-      listSection.appendChild(article);    });
+      listSection.appendChild(article);
+    });
   } catch (error) {
     console.error('Error loading assignments:', error);
     listSection.innerHTML = '<p>Error loading assignments. Please try again later.</p>';
-    }
+  }
 }
 
 // --- Initial Page Load ---

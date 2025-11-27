@@ -65,10 +65,12 @@ function getAssignmentIdFromURL() {
 function renderAssignmentDetails(assignment) {
   // ... your implementation here ...
   assignmentTitle.textContent = assignment.title;
-  assignmentDueDate.textContent = "Due: " + assignment.dueDate;
+  const dueDate = assignment.dueDate || assignment.due_date || 'N/A';
+  assignmentDueDate.textContent = "Due: " + dueDate;
   assignmentDescription.textContent = assignment.description;
   assignmentFilesList.innerHTML = '';
-  assignment.files.forEach(file => {
+  const files = assignment.files || [];
+  files.forEach(file => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = "#";
@@ -110,6 +112,11 @@ function createCommentArticle(comment) {
 function renderComments() {
   // ... your implementation here ...
   commentList.innerHTML = '';
+
+  if (currentComments.length === 0) {
+    commentList.innerHTML = '<p>No comments yet. Be the first to post!</p>';
+    return;
+  }
 
   currentComments.forEach(comment => {
     const commentArticle = createCommentArticle(comment);
@@ -172,19 +179,22 @@ async function initializePage() {
   currentAssignmentId = getAssignmentIdFromURL();
 
   if (!currentAssignmentId) {
-    console.error('No assignment ID found in URL.');
-    assignmentTitle.textContent = 'Error: No assignment ID provided.';
-
-    return;
+    console.warn('No assignment ID found in URL. Using first assignment as default.');
+    // Don't return - try to load first assignment instead
   }
   try {
     const [assignmentsResponse, commentsResponse] = await Promise.all([
-      fetch('assignments.json'),
-      fetch('comments.json')
+      fetch('api/assignments.json'),
+      fetch('api/comments.json')
     ]);
 
     const assignments = await assignmentsResponse.json();
     const commentsData = await commentsResponse.json();
+
+    // If no ID provided, use the first assignment
+    if (!currentAssignmentId && assignments.length > 0) {
+      currentAssignmentId = assignments[0].id;
+    }
 
     const assignment = assignments.find(a => a.id === currentAssignmentId);
 
@@ -193,7 +203,13 @@ async function initializePage() {
     if (assignment) {
       renderAssignmentDetails(assignment);
       renderComments();
-      commentForm.addEventListener('submit', handleAddComment);
+      
+      // Add the event listener for the comment form
+      if (commentForm) {
+        commentForm.addEventListener('submit', handleAddComment);
+      } else {
+        console.error('Comment form not found');
+      }
     } else {
       console.error('Assignment not found for ID:', currentAssignmentId);
       assignmentTitle.textContent = 'Error: Assignment not found.';
