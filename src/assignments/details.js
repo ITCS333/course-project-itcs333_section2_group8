@@ -24,6 +24,13 @@ let currentComments = [];
 
 // --- Element Selections ---
 // TODO: Select all the elements you added IDs for in step 2.
+const assignmentTitle = document.getElementById('assignment-title');
+const assignmentDueDate = document.getElementById('assignment-due-date');
+const assignmentDescription = document.getElementById('assignment-description');
+const assignmentFilesList = document.getElementById('assignment-files-list');
+const commentList = document.getElementById('comment-list');
+const commentForm = document.getElementById('comment-form');
+const newCommentText = document.getElementById('new-comment-text');
 
 // --- Functions ---
 
@@ -36,6 +43,13 @@ let currentComments = [];
  */
 function getAssignmentIdFromURL() {
   // ... your implementation here ...
+  const queryString = window.location.search;
+
+  const urlParams = new URLSearchParams(queryString);
+  const id = urlParams.get('id');
+
+  return id;
+  
 }
 
 /**
@@ -50,6 +64,20 @@ function getAssignmentIdFromURL() {
  */
 function renderAssignmentDetails(assignment) {
   // ... your implementation here ...
+  assignmentTitle.textContent = assignment.title;
+  const dueDate = assignment.dueDate || assignment.due_date || 'N/A';
+  assignmentDueDate.textContent = "Due: " + dueDate;
+  assignmentDescription.textContent = assignment.description;
+  assignmentFilesList.innerHTML = '';
+  const files = assignment.files || [];
+  files.forEach(file => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = "#";
+    a.textContent = file;
+    li.appendChild(a);
+    assignmentFilesList.appendChild(li);
+  });
 }
 
 /**
@@ -59,6 +87,18 @@ function renderAssignmentDetails(assignment) {
  */
 function createCommentArticle(comment) {
   // ... your implementation here ...
+  const article = document.createElement('article');
+
+  const authorHeader = document.createElement('h4');
+  authorHeader.textContent = comment.author;
+  article.appendChild(authorHeader);
+
+
+  const textParagraph = document.createElement('p');
+  textParagraph.textContent = comment.text;
+  article.appendChild(textParagraph);
+
+  return article;
 }
 
 /**
@@ -71,6 +111,17 @@ function createCommentArticle(comment) {
  */
 function renderComments() {
   // ... your implementation here ...
+  commentList.innerHTML = '';
+
+  if (currentComments.length === 0) {
+    commentList.innerHTML = '<p>No comments yet. Be the first to post!</p>';
+    return;
+  }
+
+  currentComments.forEach(comment => {
+    const commentArticle = createCommentArticle(comment);
+    commentList.appendChild(commentArticle);
+  });
 }
 
 /**
@@ -88,6 +139,23 @@ function renderComments() {
  */
 function handleAddComment(event) {
   // ... your implementation here ...
+  event.preventDefault();
+
+  const commentText = newCommentText.value.trim();
+  if (commentText === '') {
+    return;
+  }
+
+  const newComment = {
+    author: 'Student',
+    text: commentText
+  };
+
+  currentComments.push(newComment);
+
+  renderComments();
+
+  newCommentText.value = '';
 }
 
 /**
@@ -108,6 +176,48 @@ function handleAddComment(event) {
  */
 async function initializePage() {
   // ... your implementation here ...
+  currentAssignmentId = getAssignmentIdFromURL();
+
+  if (!currentAssignmentId) {
+    console.warn('No assignment ID found in URL. Using first assignment as default.');
+    // Don't return - try to load first assignment instead
+  }
+  try {
+    const [assignmentsResponse, commentsResponse] = await Promise.all([
+      fetch('api/assignments.json'),
+      fetch('api/comments.json')
+    ]);
+
+    const assignments = await assignmentsResponse.json();
+    const commentsData = await commentsResponse.json();
+
+    // If no ID provided, use the first assignment
+    if (!currentAssignmentId && assignments.length > 0) {
+      currentAssignmentId = assignments[0].id;
+    }
+
+    const assignment = assignments.find(a => a.id === currentAssignmentId);
+
+    currentComments = commentsData[currentAssignmentId] || [];
+
+    if (assignment) {
+      renderAssignmentDetails(assignment);
+      renderComments();
+      
+      // Add the event listener for the comment form
+      if (commentForm) {
+        commentForm.addEventListener('submit', handleAddComment);
+      } else {
+        console.error('Comment form not found');
+      }
+    } else {
+      console.error('Assignment not found for ID:', currentAssignmentId);
+      assignmentTitle.textContent = 'Error: Assignment not found.';
+    }
+  } catch (error) {
+    console.error('Error initializing page:', error);
+    assignmentTitle.textContent = 'Error loading assignment details.';
+  }
 }
 
 // --- Initial Page Load ---

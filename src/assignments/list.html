@@ -10,12 +10,12 @@
 <head>
     <!-- TODO: Add meta tags for charset and viewport. -->
     <meta charset="UTF-8">
-    
-    <!-- TODO: Add a title, e.g., "Course Assignments". -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Assignments</title>
 
     <!-- TODO: Link to your CSS framework or stylesheet. -->
     <link rel="stylesheet" href="../common/styles.css">
+    <script src="list.js" defer></script>
 </head>
 <body>
 
@@ -27,7 +27,7 @@
     <!-- TODO: Create the 'main' content area. -->
     <main>
         <!-- TODO: Create a 'section' to contain the list of assignments. -->
-        <section>
+        <section id="assignment-list-section">
             <!-- TODO: Add 2-3 dummy assignment entries using the structure below. -->
 
             <!-- Example Assignment 1: -->
@@ -41,9 +41,9 @@
                 <p>This assignment covers the basics of HTML structure, including elements, attributes, and semantic tags.</p>
 
                 <!-- TODO: Add an anchor tag ('a') that links to the detail page. 
-                     - For now, the 'href' can be "assignment-detail.html".
+                     - The 'href' should link to details.html with the assignment ID.
                      - The link text should be "View Details & Discussion". -->
-                <a href="assignment-detail.html">View Details & Discussion</a>
+                <a href="details.html">View Details & Discussion</a>
             <!-- End of article. -->
             </article>
 
@@ -53,7 +53,7 @@
                 <h2>Assignment 2: CSS Fundamentals</h2>
                 <p>Due: 2025-11-15</p>
                 <p>This assignment focuses on the basics of CSS, including selectors, properties, and the box model.</p>
-                <a href="assignment-detail.html">View Details & Discussion</a>
+                <a href="details.html">View Details & Discussion</a>
             </article>
 
         <!-- End of assignment list section. -->
