@@ -29,12 +29,24 @@ function createWeekArticle(week) {
   // ... your implementation here ...
   const article = document.createElement("article");
 
-  article.innerHTML = `
-    <h2>${week.title}</h2>
-    <p><strong>Start Date:</strong> ${week.startDate}</p>
-    <p>${week.description}</p>
-    <a href="details.html?id=${week.id}">View Details & Discussion</a>
-  `;
+  const heading = document.createElement("h2");
+  heading.textContent = week.title || "Untitled Week";
+
+  const startDatePara = document.createElement("p");
+  startDatePara.textContent = `Starts on: ${week.startDate || "TBD"}`;
+
+  const descriptionPara = document.createElement("p");
+  descriptionPara.textContent = week.description || "Description coming soon.";
+
+  const link = document.createElement("a");
+  const weekId = week.id || "";
+  link.href = weekId ? `details.html?id=${weekId}` : "details.html";
+  link.textContent = "View Details & Discussion";
+
+  article.appendChild(heading);
+  article.appendChild(startDatePara);
+  article.appendChild(descriptionPara);
+  article.appendChild(link);
 
   return article;
 }
@@ -53,10 +65,26 @@ function createWeekArticle(week) {
 async function loadWeeks() {
   // ... your implementation here ...
   try {
+    if (!listSection) {
+      throw new Error("Week list section is missing from the DOM.");
+    }
+
     const response = await fetch("weeks.json");
-    const weeks = await response.json();
+    if (!response.ok) {
+      throw new Error(`Failed to load weeks.json: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const weeks = Array.isArray(data) ? data : [];
 
     listSection.innerHTML = "";
+
+    if (weeks.length === 0) {
+      const emptyParagraph = document.createElement("p");
+      emptyParagraph.textContent = "No weekly content is available yet.";
+      listSection.appendChild(emptyParagraph);
+      return;
+    }
 
     weeks.forEach(week => {
       const article = createWeekArticle(week);
@@ -65,7 +93,9 @@ async function loadWeeks() {
 
   } catch (error) {
     console.error(error);
-    listSection.textContent = "Error loading weeks.";
+    if (listSection) {
+      listSection.textContent = "Error loading weeks.";
+    }
   }
 }
 

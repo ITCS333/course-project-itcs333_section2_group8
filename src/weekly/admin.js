@@ -14,6 +14,7 @@
 // --- Global Data Store ---
 // This will hold the weekly data loaded from the JSON file.
 let weeks = [];
+let editingWeekId = null;
 
 // --- Element Selections ---
 // TODO: Select the week form ('#week-form').
@@ -24,7 +25,47 @@ const weekTitleInput = document.querySelector('#week-title');
 const weekStartDateInput = document.querySelector('#week-start-date');
 const weekDescriptionInput = document.querySelector('#week-description');
 const weekLinksTextarea = document.querySelector('#week-links');
+const addWeekButton = document.querySelector('#add-week');
 // TODO: Select the weeks table body ('#weeks-tbody').
+
+// --- Helper Functions ---
+function getSanitizedLinks(text) {
+  return text
+    .split('\n')
+    .map(link => link.trim())
+    .filter(link => link.length > 0);
+}
+
+function resetFormState() {
+  if (!weekForm) {
+    return;
+  }
+  weekForm.reset();
+  editingWeekId = null;
+  if (addWeekButton) {
+    addWeekButton.textContent = 'Add Week';
+  }
+}
+
+function populateFormForEdit(week) {
+  if (!weekForm) {
+    return;
+  }
+  if (!weekTitleInput || !weekStartDateInput || !weekDescriptionInput || !weekLinksTextarea) {
+    return;
+  }
+  weekTitleInput.value = week.title || '';
+  weekStartDateInput.value = week.startDate || '';
+  weekDescriptionInput.value = week.description || '';
+  weekLinksTextarea.value = (week.links || []).join('\n');
+  editingWeekId = week.id;
+  if (addWeekButton) {
+    addWeekButton.textContent = 'Update Week';
+  }
+  if (weekTitleInput) {
+    weekTitleInput.focus();
+  }
+}
 
 // --- Functions ---
 
@@ -44,11 +85,11 @@ function createWeekRow(week) {
 
   // Week title
   const titleTd = document.createElement('td');
-  titleTd.textContent = week.title;
+  titleTd.textContent = week.title || 'Untitled Week';
 
   // Week description
   const descTd = document.createElement('td');
-  descTd.textContent = week.description;
+  descTd.textContent = week.description || 'No description provided.';
 
   // Actions (Edit + Delete)
   const actionsTd = document.createElement('td');
@@ -84,8 +125,23 @@ function createWeekRow(week) {
  */
 function renderTable() {
   // ... your implementation here ...
+  if (!weeksTableBody) {
+    return;
+  }
+
   // Clear existing rows
   weeksTableBody.innerHTML = '';
+
+  if (!Array.isArray(weeks) || weeks.length === 0) {
+    const emptyRow = document.createElement('tr');
+    const emptyCell = document.createElement('td');
+    emptyCell.colSpan = 3;
+    emptyCell.textContent = 'No weeks available yet. Use the form above to add one.';
+    emptyRow.appendChild(emptyCell);
+    weeksTableBody.appendChild(emptyRow);
+    return;
+  }
+
   // Loop through weeks and create rows
   weeks.forEach(week => {
     const weekRow = createWeekRow(week);
@@ -110,32 +166,43 @@ function handleAddWeek(event) {
   // ... your implementation here ...
   event.preventDefault();
 
+  if (!weekForm || !weekTitleInput || !weekStartDateInput || !weekDescriptionInput || !weekLinksTextarea) {
+    return;
+  }
+
   const title = weekTitleInput.value.trim();
-  const startDate = weekStartDateInput.value.trim();
+  const startDate = weekStartDateInput.value;
   const description = weekDescriptionInput.value.trim();
+  const links = getSanitizedLinks(weekLinksTextarea.value);
 
-  const linksText = weekLinksTextarea.value.trim();
-  const links = linksText ? linksText.split("\n") : [];
+  if (!title || !startDate || !description) {
+    return;
+  }
 
-
-  const newWeek = {
-    id: `week_${Date.now()}`, // unique ID
-    title,
-    startDate,
-    description,
-    links
-  };
-
-  weeks.push(newWeek);
-
+  if (editingWeekId) {
+    const index = weeks.findIndex(week => week.id === editingWeekId);
+    if (index !== -1) {
+      weeks[index] = {
+        ...weeks[index],
+        title,
+        startDate,
+        description,
+        links
+      };
+    }
+  } else {
+    const newWeek = {
+      id: `week_${Date.now()}`, // unique ID
+      title,
+      startDate,
+      description,
+      links
+    };
+    weeks.push(newWeek);
+  }
 
   renderTable();
-
-
-
-  weekForm.reset();
-
-
+  resetFormState();
 }
 
 /**
@@ -153,6 +220,10 @@ function handleTableClick(event) {
 
     const target = event.target;
 
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
     if (target.classList.contains("delete-btn")) {
     const id = target.dataset.id;
 
@@ -160,6 +231,16 @@ function handleTableClick(event) {
 
         renderTable();
 
+        if (editingWeekId && editingWeekId === id) {
+          resetFormState();
+        }
+
+    } else if (target.classList.contains('edit-btn')) {
+      const id = target.dataset.id;
+      const weekToEdit = weeks.find(week => week.id === id);
+      if (weekToEdit) {
+        populateFormForEdit(weekToEdit);
+      }
     }
 
 }
@@ -184,15 +265,27 @@ async function loadAndInitialize() {
     }
     const data = await response.json();
 
-    weeks = data;
+    weeks = Array.isArray(data) ? data : [];
 
     renderTable();
 
-    weekForm.addEventListener('submit', handleAddWeek);
+    if (weekForm) {
+      weekForm.addEventListener('submit', handleAddWeek);
+    }
 
-    weeksTableBody.addEventListener('click', handleTableClick);
+    if (weeksTableBody) {
+      weeksTableBody.addEventListener('click', handleTableClick);
+    }
   } catch (error) {
     console.error('Failed to load weeks.json:', error);
+    renderTable();
+    if (weekForm) {
+      weekForm.addEventListener('submit', handleAddWeek);
+    }
+    if (weeksTableBody) {
+      weeksTableBody.addEventListener('click', handleTableClick);
+    }
+    return;
   }
 
 }

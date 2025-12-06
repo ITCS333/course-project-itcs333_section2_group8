@@ -120,6 +120,7 @@ if ($rawBody) {
         $body = $rawBody;
     }
 }
+$requestData = is_array($body) ? $body : [];
 
 
 // TODO: Parse query parameters
@@ -132,6 +133,7 @@ $GLOBALS['db'] = $db;
 $GLOBALS['request_method'] = $method;
 $GLOBALS['request_body'] = $body;
 $GLOBALS['resource'] = $resource;
+$GLOBALS['request_data'] = $requestData;
 
 // ============================================================================
 // WEEKS CRUD OPERATIONS
@@ -201,7 +203,8 @@ function getAllWeeks($db) {
     // TODO: Process each week's links field
     // Decode the JSON string back to an array using json_decode()
     foreach ($weeks as &$week) {
-        $week['links'] = json_decode($week['links'], true);
+        $decodedLinks = json_decode($week['links'], true);
+        $week['links'] = is_array($decodedLinks) ? $decodedLinks : [];
     }
     // TODO: Return JSON response with success status and data
     // Use sendResponse() helper function
@@ -648,7 +651,7 @@ try {
     // TODO: Determine the resource type from query parameters
     // Get 'resource' parameter (?resource=weeks or ?resource=comments)
     // If not provided, default to 'weeks'
-        $resource = $_GET['resource'] ?? 'weeks';
+        $resource = $GLOBALS['resource'] ?? 'weeks';
 
     
     // Route based on resource type and HTTP method
@@ -671,7 +674,7 @@ try {
 
         } elseif ($method === 'PUT') {
             // TODO: Call updateWeek() with the decoded request body
-                        updateWeek($db, $requestData);
+                       updateWeek($db, $requestData);
 
         } elseif ($method === 'DELETE') {
             // TODO: Get week_id from query parameter or request body
@@ -781,6 +784,33 @@ function sendError($message, $statusCode = 400) {
     // TODO: Call sendResponse() with the error array and status code
         sendResponse($response, $statusCode);
 
+}
+
+/**
+ * Helper function to send success/error payloads with consistent shape
+ *
+ * @param bool $success
+ * @param mixed $payload
+ * @param int $statusCode
+ */
+function jsonResponse($success, $payload = null, $statusCode = 200) {
+    $response = [
+        'success' => $success
+    ];
+
+    if ($payload !== null) {
+        if ($success) {
+            if (is_string($payload)) {
+                $response['message'] = $payload;
+            } else {
+                $response['data'] = $payload;
+            }
+        } else {
+            $response['error'] = $payload;
+        }
+    }
+
+    sendResponse($response, $statusCode);
 }
 
 

@@ -61,18 +61,33 @@ function getWeekIdFromURL() {
  */
 function renderWeekDetails(week) {
   // ... your implementation here ...
-  weekTitle.textContent = week.title;
+  if (!weekTitle || !weekStartDate || !weekDescription || !weekLinksList) {
+    return;
+  }
 
-  weekStartDate.textContent = "Starts on: " + week.startDate;
+  weekTitle.textContent = week.title || "Week Details";
 
-  weekDescription.textContent = week.description;
+  weekStartDate.textContent = "Starts on: " + (week.startDate || "TBD");
 
-  weekLinksList.innerHTML = ""; 
+  weekDescription.textContent = week.description || "More information will be added soon.";
 
-  week.links.forEach(link => {
+  weekLinksList.innerHTML = "";
+
+  const links = Array.isArray(week.links) ? week.links : [];
+
+  if (links.length === 0) {
+    const emptyItem = document.createElement('li');
+    emptyItem.textContent = "No resources linked yet.";
+    weekLinksList.appendChild(emptyItem);
+    return;
+  }
+
+  links.forEach(link => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = link;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
     a.textContent = link;
     li.appendChild(a);
     weekLinksList.appendChild(li);
@@ -91,10 +106,10 @@ function createCommentArticle(comment) {
   article.classList.add('comment');
 
   const p = document.createElement('p');
-  p.textContent = comment.text;
+  p.textContent = comment.text || '';
 
   const footer = document.createElement('footer');
-  footer.textContent = "Posted by: " + comment.author;
+  footer.textContent = "Posted by: " + (comment.author || 'Student');
 
   article.appendChild(p);
   article.appendChild(footer);
@@ -112,7 +127,18 @@ function createCommentArticle(comment) {
  */
 function renderComments() {
   // ... your implementation here ...
+  if (!commentList) {
+    return;
+  }
+
   commentList.innerHTML = "";
+
+  if (!Array.isArray(currentComments) || currentComments.length === 0) {
+    const emptyState = document.createElement('p');
+    emptyState.textContent = "No comments yet. Be the first to ask a question!";
+    commentList.appendChild(emptyState);
+    return;
+  }
 
   currentComments.forEach(comment => {
     const commentArticle = createCommentArticle(comment);
@@ -136,6 +162,10 @@ function renderComments() {
 function handleAddComment(event) {
   // ... your implementation here ...
   event.preventDefault(); 
+
+  if (!newCommentText) {
+    return;
+  }
 
   const text = newCommentText.value.trim(); 
 
@@ -176,7 +206,9 @@ async function initializePage() {
 
   // 2. If no ID → show error
   if (!currentWeekId) {
-    weekTitle.textContent = "Week not found.";
+    if (weekTitle) {
+      weekTitle.textContent = "Week not found.";
+    }
     return;
   }
 
@@ -188,6 +220,10 @@ async function initializePage() {
     ]);
 
     // 4. Parse them
+    if (!weeksRes.ok || !commentsRes.ok) {
+      throw new Error("Failed to load week data.");
+    }
+
     const weeksData = await weeksRes.json();
     const commentsData = await commentsRes.json();
 
@@ -195,22 +231,30 @@ async function initializePage() {
     const week = weeksData.find(w => w.id === currentWeekId);
 
     if (!week) {
-      weekTitle.textContent = "Week not found.";
+      if (weekTitle) {
+        weekTitle.textContent = "Week not found.";
+      }
       return;
     }
 
     // 6. Get comments or empty array
-    currentComments = commentsData[currentWeekId] || [];
+    currentComments = Array.isArray(commentsData[currentWeekId])
+      ? commentsData[currentWeekId]
+      : [];
 
     // 7. Render the page
     renderWeekDetails(week);
     renderComments();
 
     // 8. Add listener to the comment form
-    commentForm.addEventListener("submit", handleAddComment);
+    if (commentForm) {
+      commentForm.addEventListener("submit", handleAddComment);
+    }
 
   } catch (error) {
-    weekTitle.textContent = "Error loading data.";
+    if (weekTitle) {
+      weekTitle.textContent = "Error loading data.";
+    }
     console.error(error);
   }
 }

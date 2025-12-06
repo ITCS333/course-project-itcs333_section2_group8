@@ -142,6 +142,7 @@ function handleAddStudent(event) {
     id: id.value,
     email: email.value};
   students.push(newStudent);
+  console.log(students);
   renderTable(students);
   name.value = "";
   id.value = "";
@@ -203,6 +204,7 @@ function handleTableClick(event) {
    if (target.classList.contains("cancel-btn")) {
     renderTable(students);
   }
+}
   
 
 /**
@@ -283,7 +285,7 @@ renderTable(students);
 async function loadStudentsAndInitialize() {
   // ... your implementation here ...
 try {
-    const response = await fetch("students.json");
+    const response = await fetch("api/students.json");
 
     if (!response.ok) {
       console.error("Failed to load students.json");
@@ -293,7 +295,7 @@ try {
     renderTable(students);}
      catch (err) {
     console.error("Error loading students:", err);}
-
+    
   if (changePasswordForm)
     changePasswordForm.addEventListener("submit", handleChangePassword);
 
@@ -313,4 +315,4 @@ try {
 
 // --- Initial Page Load ---
 // Call the main async function to start the application.
-loadStudentsAndInitialize();
+loadStudentsAndInitialize()

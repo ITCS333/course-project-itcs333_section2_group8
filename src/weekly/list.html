@@ -16,8 +16,8 @@
     <title>Weekly Course Breakdown</title>
 
     <!-- TODO: Link to your CSS framework or stylesheet. -->
-    <link rel="stylesheet" href="styles.css">
-
+    <link rel="stylesheet" href="../common/styles.css">
+    <link rel="stylesheet" href="../common/weekly.css">
 </head>
 <body>
 
@@ -34,57 +34,46 @@
             <h2>Course Weeks</h2>
         
             <!-- TODO: Add 2-3 dummy weekly entries using the structure below. -->
-
-
             <!-- Example Week 1: -->
-                <article>
-                    <h2>Week 1: Introduction to HTML</h2>
-                    <p>Starts on: 2024-01-01</p>
-                    <p>This week covers the basics of HTML, including structure, common tags, and best practices for writing clean code.</p>
-                    <a href="details.html">View Details & Discussion</a>
-                </article>
-            <!-- End of article. -->
-            <!-- Example Week 2: -->
-                <article>
-                    <h2>Week 2: CSS Fundamentals</h2>
-                    <p>Starts on: 2024-01-08</p>
-                    <p>This week focuses on the fundamentals of CSS, including selectors, properties, and how to style HTML elements effectively.</p>
-                    <a href="details.html">View Details & Discussion</a>
-                </article>
-            <!-- End of article. -->
-            <!-- Example Week 3: -->
-                <article>
-                    <h2>Week 3: JavaScript Basics</h2>
-                    <p>Starts on: 2024-01-15</p>
-                    <p>This week introduces JavaScript, covering basic syntax, variables, functions, and how to add interactivity to web pages.</p>
-                    <a href="details.html">View Details & Discussion</a>
-                </article>
-            <!-- End of article. -->
-        <!-- End of weekly list section. -->
-    <!-- End of main. -->
-
-
             <!-- TODO: Use an 'article' element for each week to group its content semantically. -->
-            
+            <article>
                 <!-- TODO: Add a heading ('h2') for the week's title (e.g., "Week 1: Introduction to HTML"). -->
-                
+                <h2>Week 1: Introduction to HTML</h2>
                 <!-- TODO: Add a paragraph ('p') to display the start date, e.g., "Starts on: YYYY-MM-DD". -->
+                <p>Starts on: 2024-01-01</p>
                 <!-- TODO: Add a paragraph ('p') for a brief description of the week. -->
+                <p>This week covers the basics of HTML, including structure, common tags, and best practices for writing clean code.</p>
                 <!-- TODO: Add an anchor tag ('a') that links to the detail page. 
                      - For now, the 'href' can be "week-detail.html".
                      - The link text should be "View Details & Discussion". -->
+                <a href="details.html?id=week_1">View Details & Discussion</a>
+            </article>
             <!-- End of article. -->
 
             <!-- Example Week 2: -->
             <!-- TODO: Create a second 'article' for another week. -->
+            <article>
                 <!-- TODO: Add a heading, a paragraph for the start date, a paragraph for the description, and an anchor tag linking to "week-detail.html". -->
+                <h2>Week 2: CSS Fundamentals</h2>
+                <p>Starts on: 2024-01-08</p>
+                <p>This week focuses on the fundamentals of CSS, including selectors, properties, and how to style HTML elements effectively.</p>
+                <a href="details.html?id=week_2">View Details & Discussion</a>
+            </article>
             <!-- End of article. -->
-                     </section>
-    </main>
 
-
+            <!-- Example Week 3: -->
+            <article>
+                <h2>Week 3: JavaScript Basics</h2>
+                <p>Starts on: 2024-01-15</p>
+                <p>This week introduces JavaScript, covering basic syntax, variables, functions, and how to add interactivity to web pages.</p>
+                <a href="details.html?id=week_3">View Details & Discussion</a>
+            </article>
+            <!-- End of article. -->
+        </section>
         <!-- End of weekly list section. -->
+    </main>
     <!-- End of main. -->
 
+    <script src="list.js" defer></script>
 </body>
 </html>
