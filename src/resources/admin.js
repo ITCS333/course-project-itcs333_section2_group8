@@ -17,8 +17,9 @@ let resources = [];
 
 // --- Element Selections ---
 // TODO: Select the resource form ('#resource-form').
-
+const resourceForm = document.getElementById('resource-form');
 // TODO: Select the resources table body ('#resources-tbody').
+const resourcesTableBody = document.getElementById('resources-tbody');
 
 // --- Functions ---
 
@@ -33,7 +34,31 @@ let resources = [];
  * - A "Delete" button with class "delete-btn" and `data-id="${id}"`.
  */
 function createResourceRow(resource) {
-  // ... your implementation here ...
+  const row = document.createElement('tr');
+
+  const titleEl = document.createElement('td');
+  titleEl.textContent = resource.title;
+  row.appendChild(titleEl);
+
+  const descriptionEl = document.createElement('td');
+  descriptionEl.textContent = resource.description;
+  row.appendChild(descriptionEl);
+
+  const actionsEl = document.createElement('td');
+  const editButton = document.createElement('button');
+  editButton.textContent = 'Edit';
+  editButton.classList.add('edit-btn');
+  editButton.setAttribute('data-id', resource.id);
+  actionsEl.appendChild(editButton);
+
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.classList.add('delete-btn');
+  deleteButton.setAttribute('data-id', resource.id);
+  actionsEl.appendChild(deleteButton);
+
+  row.appendChild(actionsEl);
+  return row;
 }
 
 /**
@@ -45,7 +70,11 @@ function createResourceRow(resource) {
  * append the resulting <tr> to `resourcesTableBody`.
  */
 function renderTable() {
-  // ... your implementation here ...
+  resourcesTableBody.innerHTML = '';
+  resources.forEach(resource => {
+    const row = createResourceRow(resource);
+    resourcesTableBody.appendChild(row);
+  });
 }
 
 /**
@@ -60,7 +89,22 @@ function renderTable() {
  * 6. Reset the form.
  */
 function handleAddResource(event) {
-  // ... your implementation here ...
+  event.preventDefault();
+
+  const title = document.getElementById('resource-title').value;
+  const description = document.getElementById('resource-description').value;
+  const link = document.getElementById('resource-link').value;
+
+  const newResource = {
+    id: `res_${Date.now()}`,
+    title,
+    description,
+    link
+  };
+
+  resources.push(newResource);
+  renderTable();
+  resourceForm.reset();
 }
 
 /**
@@ -74,7 +118,11 @@ function handleAddResource(event) {
  * 4. Call `renderTable()` to refresh the list.
  */
 function handleTableClick(event) {
-  // ... your implementation here ...
+  if (event.target.classList.contains('delete-btn')) {
+    const resourceId = event.target.getAttribute('data-id');
+    resources = resources.filter(resource => resource.id !== resourceId);
+    renderTable();
+  }
 }
 
 /**
@@ -88,7 +136,11 @@ function handleTableClick(event) {
  * 5. Add the 'click' event listener to `resourcesTableBody` (calls `handleTableClick`).
  */
 async function loadAndInitialize() {
-  // ... your implementation here ...
+  const response = await fetch('resources.json');
+  resources = await response.json();
+  renderTable();
+  resourceForm.addEventListener('submit', handleAddResource);
+  resourcesTableBody.addEventListener('click', handleTableClick);
 }
 
 // --- Initial Page Load ---
