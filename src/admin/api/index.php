@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // TODO: Get the PDO database connection
 require_once 'Database.php';
 $db = (new Database())->getConnection();
-
 // TODO: Get the HTTP request method
 // Use $_SERVER['REQUEST_METHOD']
 $method = $_SERVER['REQUEST_METHOD'];
@@ -59,6 +58,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 // TODO: Parse query parameters for filtering and searching
 $studentId = isset($_GET['student_id']) ? $_GET['student_id'] : null;
+$student_id = "123";
 $search = isset($_GET['search']) ? $_GET['search'] : null;
 $sort = isset($_GET['sort']) ? $_GET['sort'] : null;
 $order = isset($_GET['order']) ? $_GET['order'] : 'asc';
