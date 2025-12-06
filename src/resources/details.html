@@ -18,7 +18,7 @@
 <body>
     <!-- TODO: Create a 'header' with a main heading ('h1'). You can use a dummy title like "Chapter 1 Notes". -->
     <header>
-        <h1>Chapter 1 Notes</h1>
+        <h1 id="resource-title">Chapter 1 Notes</h1>
     </header>
     <!-- TODO: Create the 'main' content area. -->
     <main>
@@ -27,12 +27,12 @@
         <!-- TODO: Use an 'article' to display the main resource information. -->
         <article>
             <!-- TODO: Add a paragraph ('p') for the resource description (use dummy text). -->
-             <p>Resource Description</p>
+             <p id="resource-description">Resource Description</p>
             <!-- TODO: Add an anchor tag ('a') that links to the actual resource URL (use a dummy link like "https://example.com").
             - Text should be "Access Resource Material".
             - Consider adding 'target="_blank"' to open it in a new tab. -->
             <!-- End of article. -->
-             <a href="http://example" target="_blank">Access Resource Material</a>
+             <a href="http://example" target="_blank" id="resource-link">Access Resource Material</a>
         </article>
 
         <!-- Section 2: Discussion Forum -->
@@ -44,8 +44,7 @@
             <!-- Subsection 2.1: Existing Comments -->
             <!-- TODO: Add a container (like a 'div') for the list of comments. -->
                 <!-- TODO: Add 1-2 dummy comments to show the structure. -->
-            <div>
-
+            <div id="comment-list">
                 <!-- Example Comment 1: -->
                 <!-- TODO: Use an 'article' for each comment. -->
                 <!-- TODO: Use a 'p' for the comment text (e.g., "This was very helpful, thanks!"). -->
@@ -66,7 +65,7 @@
             
             <!-- Subsection 2.2: Add a Comment Form -->
             <!-- TODO: Create a 'form' for users to post new comments. Action can be '#'. -->
-             <form action="#" method="post">
+             <form action="#" method="post" id="comment-form">
                  <!-- TODO: Use a 'fieldset' to group the controls. -->
                  <!-- TODO: Add a 'legend', e.g., "Leave a Comment". -->
                  <fieldset>
@@ -75,7 +74,7 @@
                     - label 'for': "new-comment"
                     - textarea 'id': "new-comment", required -->
                     <label for="new-comment"></label>
-                    <textarea name="new-comment" required></textarea>
+                    <textarea name="new-comment" required id="new-comment"></textarea>
                     <!-- TODO: Add a 'button' to submit the comment.
                     - type="submit", Text: "Post Comment" -->
                     <button type="submit">submit</button>
@@ -88,5 +87,6 @@
 
         <!-- End of main. -->
     </main>
+    <script src="details.js" defer></script>
 </body>
 </html>
