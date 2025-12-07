@@ -2,9 +2,9 @@
 
 class Database {
     private $host = "localhost";
-    private $db_name = "school_management";
-    private $username = "admin";
-    private $password = "password";
+    private $db_name = "course_management";
+    private $username = "root";
+    private $password = "";
     private $pdo;
 
     public function getConnection() {
