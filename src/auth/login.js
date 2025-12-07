@@ -13,20 +13,17 @@
   3. Implement the JavaScript functionality as described in the TODO comments.
 */
 
-// --- Element Selections ---
-// We can safely select elements here because 'defer' guarantees
-// the HTML document is parsed before this script runs.
-
 // TODO: Select the login form. (You'll need to add id="login-form" to the <form> in your HTML).
-const loginForm = document.getElementById("login-form");
+const loginForm = document.getElementById('login-form');
 
 // TODO: Select the email input element by its ID.
-const emailInput = document.getElementById("email");
+const emailInput = document.getElementById('email');
+
 // TODO: Select the password input element by its ID.
-const passwordInput = document.getElementById("password");
+const passwordInput = document.getElementById('password');
+
 // TODO: Select the message container element by its ID.
-const messageContainer = document.getElementById("message-container");
-// --- Functions ---
+const messageContainer = document.getElementById('message-container');
 
 /**
  * TODO: Implement the displayMessage function.
@@ -40,9 +37,14 @@ const messageContainer = document.getElementById("message-container");
  * (this will allow for CSS styling of 'success' and 'error' states).
  */
 function displayMessage(message, type) {
-  // ... your implementation here ...
     messageContainer.textContent = message;
-  messageContainer.className = type; 
+    messageContainer.className = `message ${type}`;
+    
+    // Auto-hide message after 5 seconds
+    setTimeout(() => {
+        messageContainer.textContent = '';
+        messageContainer.className = 'message';
+    }, 5000);
 }
 
 /**
@@ -58,9 +60,8 @@ function displayMessage(message, type) {
  * A simple regex for this purpose is: /\S+@\S+\.\S+/
  */
 function isValidEmail(email) {
-  // ... your implementation here ...
-  const emailRegex = /\S+@\S+\.\S+/;
-  return emailRegex.test(email);
+    const emailRegex = /\S+@\S+\.\S+/;
+    return emailRegex.test(email);
 }
 
 /**
@@ -74,9 +75,7 @@ function isValidEmail(email) {
  * 3. Return `false` if the password is not valid.
  */
 function isValidPassword(password) {
-  // ... your implementation here ...
     return password.length >= 8;
-
 }
 
 /**
@@ -94,19 +93,29 @@ function isValidPassword(password) {
  * - (Optional) Clear the email and password input fields.
  */
 function handleLogin(event) {
-  // ... your implementation here ...
-  event.preventDefault();
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim()
-  if (!isValidEmail(email)) {
-    displayMessage("Invalid email format.", "error");
-    return;}
+    event.preventDefault();
+    
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    
+    // Validate email
+    if (!isValidEmail(email)) {
+        displayMessage("Invalid email format.", "error");
+        return;
+    }
+    
+    // Validate password
     if (!isValidPassword(password)) {
-    displayMessage("Password must be at least 8 characters.", "error");
-    return;}
-      displayMessage("Login successful!", "success");
-      emailInput.value = "";
-  passwordInput.value = "";
+        displayMessage("Password must be at least 8 characters.", "error");
+        return;
+    }
+    
+    // If both valid
+    displayMessage("Login successful!", "success");
+    
+    // Optional: Clear the input fields
+    emailInput.value = '';
+    passwordInput.value = '';
 }
 
 /**
@@ -118,12 +127,12 @@ function handleLogin(event) {
  * 3. The event listener should call the `handleLogin` function.
  */
 function setupLoginForm() {
-  // ... your implementation here ...
-  if (loginForm) {
-    loginForm.addEventListener("submit", handleLogin);
-  }
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    } else {
+        console.error('Login form not found. Make sure the form has id="login-form"');
+    }
 }
 
-// --- Initial Page Load ---
-// Call the main setup function to attach the event listener.
-setupLoginForm();
+// Initialize the login form when DOM is loaded
+document.addEventListener('DOMContentLoaded', setupLoginForm);
