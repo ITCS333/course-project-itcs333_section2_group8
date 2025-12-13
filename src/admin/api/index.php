@@ -1,5 +1,8 @@
 <?php
-// TODO: Set headers for JSON response and CORS
+// Start session at the beginning - TASK1601
+session_start();
+
+// TODO: Set headers for JSON response and CORS - TASK1602, TASK1603
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -32,10 +35,10 @@ try {
     exit();
 }
 
-// TODO: Get HTTP request method
+// TODO: Get HTTP request method - TASK1604, TASK1605
 $method = $_SERVER['REQUEST_METHOD'];
 
-// TODO: Get request body for POST and PUT requests
+// TODO: Get request body for POST and PUT requests - TASK1606, TASK1607, TASK1608
 $input = json_decode(file_get_contents('php://input'), true);
 
 // TODO: Parse query parameters for filtering and searching
@@ -63,7 +66,7 @@ function sanitize($data) {
     return $data;
 }
 
-// TODO: Validate email
+// TODO: Validate email - TASK1609, TASK1610
 function validateEmail($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
@@ -71,7 +74,57 @@ function validateEmail($email) {
 // Main API logic
 try {
     switch ($action) {
+        case 'login':
+            // Get email and password from request
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
+            
+            if (empty($email) || empty($password)) {
+                sendResponse(false, null, 'Email and password are required', 400);
+            }
+            
+            // TODO: Prepare SQL query using PDO - TASK1611
+            $stmt = $pdo->prepare("SELECT id, name, email, password, is_admin FROM users WHERE email = :email");
+            $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+            
+            // TODO: Execute the query - TASK1612
+            $stmt->execute();
+            
+            // TODO: Fetch the result - TASK1613
+            $user = $stmt->fetch();
+            
+            if (!$user) {
+                sendResponse(false, null, 'Invalid email or password', 401);
+            }
+            
+            // TODO: Verify password - TASK1614
+            if (!password_verify($password, $user['password'])) {
+                sendResponse(false, null, 'Invalid email or password', 401);
+            }
+            
+            // TODO: Store user data in session - TASK1615
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['is_admin'] = $user['is_admin'];
+            
+            // Remove password from response
+            unset($user['password']);
+            
+            sendResponse(true, $user, 'Login successful');
+            break;
+            
+        case 'logout':
+            session_destroy();
+            sendResponse(true, null, 'Logged out successfully');
+            break;
+            
         case 'get_students':
+            // Check if user is logged in and is admin
+            if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // TODO: Check if search parameter exists
             $search = $_GET['search'] ?? '';
 
@@ -95,7 +148,7 @@ try {
 
             $sql .= " ORDER BY $sort $order";
 
-            // TODO: Prepare SQL query using PDO
+            // TODO: Prepare SQL query using PDO - TASK1611
             $stmt = $pdo->prepare($sql);
 
             // TODO: Bind parameters if using search
@@ -103,17 +156,22 @@ try {
                 $stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
             }
 
-            // TODO: Execute the query
+            // TODO: Execute the query - TASK1612
             $stmt->execute();
 
-            // TODO: Fetch all results as associative array
+            // TODO: Fetch all results as associative array - TASK1613
             $students = $stmt->fetchAll();
 
-            // TODO: Return JSON response
+            // TODO: Return JSON response - TASK1616
             sendResponse(true, $students, 'Students retrieved successfully');
             break;
 
         case 'get_student_by_id':
+            // Check if user is logged in and is admin
+            if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // TODO: Get student_id from query parameters
             $studentId = $_GET['id'] ?? '';
 
@@ -121,12 +179,14 @@ try {
                 sendResponse(false, null, 'Student ID is required', 400);
             }
 
-            // TODO: Prepare SQL query to select student by id
+            // TODO: Prepare SQL query to select student by id - TASK1611
             $stmt = $pdo->prepare("SELECT id, name, email, created_at FROM users WHERE id = :id AND is_admin = 0");
             $stmt->bindValue(':id', $studentId, PDO::PARAM_INT);
+            
+            // TODO: Execute the query - TASK1612
             $stmt->execute();
 
-            // TODO: Fetch the result
+            // TODO: Fetch the result - TASK1613
             $student = $stmt->fetch();
 
             // TODO: Check if student exists
@@ -138,6 +198,11 @@ try {
             break;
 
         case 'add_student':
+            // Check if user is logged in and is admin
+            if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // TODO: Validate required fields
             $name = $_POST['name'] ?? '';
             $studentId = $_POST['student_id'] ?? '';
@@ -154,7 +219,7 @@ try {
             $email = sanitize($email);
             $password = sanitize($password);
 
-            // TODO: Validate email format
+            // TODO: Validate email format - TASK1609, TASK1610
             if (!validateEmail($email)) {
                 sendResponse(false, null, 'Invalid email format', 400);
             }
@@ -171,7 +236,7 @@ try {
             // TODO: Hash the password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // TODO: Prepare INSERT query
+            // TODO: Prepare INSERT query - TASK1611
             $insertStmt = $pdo->prepare("
                 INSERT INTO users (name, email, password, is_admin) 
                 VALUES (:name, :email, :password, 0)
@@ -193,6 +258,11 @@ try {
             break;
 
         case 'update_student':
+            // Check if user is logged in and is admin
+            if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // TODO: Get data from request body
             $id = $_POST['id'] ?? 0;
             $name = $_POST['name'] ?? '';
@@ -221,7 +291,7 @@ try {
             }
 
             if (!empty($email)) {
-                // Validate new email
+                // Validate new email - TASK1609, TASK1610
                 if (!validateEmail($email)) {
                     sendResponse(false, null, 'Invalid email format', 400);
                 }
@@ -245,6 +315,8 @@ try {
             }
 
             $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id AND is_admin = 0";
+            
+            // TODO: Prepare SQL query - TASK1611
             $stmt = $pdo->prepare($sql);
 
             // TODO: Bind parameters dynamically
@@ -252,7 +324,7 @@ try {
                 $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
             }
 
-            // TODO: Execute the query
+            // TODO: Execute the query - TASK1612
             if ($stmt->execute()) {
                 sendResponse(true, null, 'Student updated successfully');
             } else {
@@ -261,6 +333,11 @@ try {
             break;
 
         case 'delete_student':
+            // Check if user is logged in and is admin
+            if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // TODO: Validate that student_id is provided
             $id = $_POST['id'] ?? 0;
 
@@ -279,11 +356,11 @@ try {
                 sendResponse(false, null, 'Student not found', 404);
             }
 
-            // TODO: Prepare DELETE query
+            // TODO: Prepare DELETE query - TASK1611
             $deleteStmt = $pdo->prepare("DELETE FROM users WHERE id = :id AND is_admin = 0");
             $deleteStmt->bindValue(':id', $id, PDO::PARAM_INT);
 
-            // TODO: Execute the query
+            // TODO: Execute the query - TASK1612
             if ($deleteStmt->execute()) {
                 sendResponse(true, ['deleted_student' => $student], 'Student deleted successfully');
             } else {
@@ -292,6 +369,11 @@ try {
             break;
 
         case 'change_password':
+            // Check if user is logged in
+            if (!isset($_SESSION['user_id'])) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // TODO: Validate required fields
             $currentPassword = $_POST['current_password'] ?? '';
             $newPassword = $_POST['new_password'] ?? '';
@@ -310,17 +392,18 @@ try {
                 sendResponse(false, null, 'New passwords do not match', 400);
             }
 
-            // TODO: Retrieve current password hash from database (for admin user ID 1)
-            $stmt = $pdo->prepare("SELECT password FROM users WHERE id = 1 AND is_admin = 1");
+            // TODO: Retrieve current password hash from database (for the logged-in user)
+            $stmt = $pdo->prepare("SELECT password FROM users WHERE id = :id");
+            $stmt->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
             $stmt->execute();
-            $admin = $stmt->fetch();
+            $user = $stmt->fetch();
 
-            if (!$admin) {
-                sendResponse(false, null, 'Admin user not found', 404);
+            if (!$user) {
+                sendResponse(false, null, 'User not found', 404);
             }
 
-            // TODO: Verify current password
-            if (!password_verify($currentPassword, $admin['password'])) {
+            // TODO: Verify current password - TASK1614
+            if (!password_verify($currentPassword, $user['password'])) {
                 sendResponse(false, null, 'Current password is incorrect', 401);
             }
 
@@ -328,8 +411,9 @@ try {
             $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
             // TODO: Update password in database
-            $updateStmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = 1");
+            $updateStmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :id");
             $updateStmt->bindValue(':password', $newHashedPassword, PDO::PARAM_STR);
+            $updateStmt->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
 
             // TODO: Check if update was successful
             if ($updateStmt->execute()) {
@@ -340,6 +424,11 @@ try {
             break;
 
         case 'get_assignments':
+            // Check if user is logged in
+            if (!isset($_SESSION['user_id'])) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // Get assignments from database
             $stmt = $pdo->query("SELECT id, title, description, due_date, created_at FROM assignments ORDER BY due_date ASC");
             $assignments = $stmt->fetchAll();
@@ -347,11 +436,60 @@ try {
             break;
 
         case 'get_admin_info':
+            // Check if user is logged in and is admin
+            if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+                sendResponse(false, null, 'Unauthorized', 401);
+            }
+            
             // Get admin user info
-            $stmt = $pdo->prepare("SELECT id, name, email, created_at FROM users WHERE id = 1 AND is_admin = 1");
+            $stmt = $pdo->prepare("SELECT id, name, email, created_at FROM users WHERE id = :id AND is_admin = 1");
+            $stmt->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
             $stmt->execute();
             $admin = $stmt->fetch();
             sendResponse(true, $admin, 'Admin info retrieved');
+            break;
+
+        case 'register':
+            // Registration logic
+            $name = $_POST['name'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
+            
+            if (empty($name) || empty($email) || empty($password)) {
+                sendResponse(false, null, 'All fields are required', 400);
+            }
+            
+            // Validate email - TASK1609, TASK1610
+            if (!validateEmail($email)) {
+                sendResponse(false, null, 'Invalid email format', 400);
+            }
+            
+            // Check if email already exists
+            $checkStmt = $pdo->prepare("SELECT id FROM users WHERE email = :email");
+            $checkStmt->bindValue(':email', $email, PDO::PARAM_STR);
+            $checkStmt->execute();
+            
+            if ($checkStmt->fetch()) {
+                sendResponse(false, null, 'Email already exists', 409);
+            }
+            
+            // Hash password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            
+            // Insert user
+            $insertStmt = $pdo->prepare("
+                INSERT INTO users (name, email, password, is_admin) 
+                VALUES (:name, :email, :password, 0)
+            ");
+            $insertStmt->bindValue(':name', sanitize($name), PDO::PARAM_STR);
+            $insertStmt->bindValue(':email', sanitize($email), PDO::PARAM_STR);
+            $insertStmt->bindValue(':password', $hashedPassword, PDO::PARAM_STR);
+            
+            if ($insertStmt->execute()) {
+                sendResponse(true, null, 'Registration successful', 201);
+            } else {
+                sendResponse(false, null, 'Registration failed', 500);
+            }
             break;
 
         default:
@@ -359,12 +497,13 @@ try {
             break;
     }
 
+// TODO: Error handling - TASK1617, TASK1618
 } catch (PDOException $e) {
-    // TODO: Handle database errors
+    // TODO: Handle database errors - TASK1618
     error_log("Database error: " . $e->getMessage());
     sendResponse(false, null, 'Database error occurred', 500);
 } catch (Exception $e) {
-    // TODO: Handle general errors
+    // TODO: Handle general errors - TASK1617
     error_log("General error: " . $e->getMessage());
     sendResponse(false, null, 'An error occurred', 500);
 }
