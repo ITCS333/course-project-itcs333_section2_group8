@@ -55,6 +55,7 @@
 // Allow cross-origin requests (CORS) if needed
 // Allow specific HTTP methods (GET, POST, PUT, DELETE, OPTIONS)
 // Allow specific headers (Content-Type, Authorization)
+    session_start();
     header("Content-Type:application/json");
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -525,6 +526,9 @@ function createComment($db, $data) {
     // Trim whitespace from author and text
     $data->author = trim($data->author);
     $data->text = trim($data->text);
+
+    // Store the current user/author in session
+    $_SESSION['current_user'] = $data->author;
 
     // TODO: Prepare INSERT query
     // INSERT INTO comments (resource_id, author, text) VALUES (?, ?, ?)
