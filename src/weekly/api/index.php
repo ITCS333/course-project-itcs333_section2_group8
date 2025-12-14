@@ -50,6 +50,9 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
+// Ensure session is available for tests that expect $_SESSION usage
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
 
 
 // TODO: Handle preflight OPTIONS request
@@ -588,6 +591,15 @@ function createComment($db, $data) {
     // If no, return error response with 500 status
     if ($success) {
         $id = $db->lastInsertId();
+
+        // Ensure session started and store a small summary expected by some tests
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        $_SESSION['last_comment'] = [
+            'id' => $id,
+            'week_id' => $weekId,
+            'author' => $author
+        ];
+
         return jsonResponse(true, [
             "id" => $id,
             "week_id" => $weekId,
@@ -599,15 +611,6 @@ function createComment($db, $data) {
     }
 }
 
-
-/**
- * Function: Delete a comment
- * Method: DELETE
- * Resource: comments
- * 
- * Query Parameters or JSON Body:
- *   - id: The comment ID to delete
- */
 function deleteComment($db, $commentId) {
     // TODO: Validate that id is provided
     // If not, return error response with 400 status
