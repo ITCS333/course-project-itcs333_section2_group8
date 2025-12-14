@@ -45,13 +45,14 @@
 // Allow specific HTTP methods (GET, POST, PUT, DELETE, OPTIONS)
 // Allow specific headers (Content-Type, Authorization)
 header('Content-Type: application/json; charset=utf-8');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 // In development allow all origins; in production restrict this to your domain(s)
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
-// Ensure session is available for tests that expect $_SESSION usage
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 
 
@@ -107,6 +108,8 @@ if (class_exists('Database')) {
 // TODO: Get the HTTP request method
 // Use $_SERVER['REQUEST_METHOD']
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
 
 // TODO: Get the request body for POST and PUT requests
 // Use file_get_contents('php://input') to get raw POST data
@@ -702,7 +705,7 @@ try {
             getCommentsByWeek($db, $weekId);
         } elseif ($method === 'POST') {
             // TODO: Call createComment() with the decoded request body
-                        createComment($db, $requestData);
+                            createComment($db, $data);
 
         } elseif ($method === 'DELETE') {
             // TODO: Get comment id from query parameter or request body
