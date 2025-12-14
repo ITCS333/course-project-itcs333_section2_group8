@@ -22,6 +22,14 @@ let currentReplies = []; // Will hold replies for *this* topic
 
 // --- Element Selections ---
 // TODO: Select all the elements you added IDs for in step 2.
+const topicSubject = document.getElementById('topic-subject');
+const originalPostArticle = document.getElementById('original-post');
+const opMessage = document.getElementById('op-message');
+const opFooter = document.getElementById('op-footer');
+const opActions = document.getElementById('op-actions');
+const replyListContainer = document.getElementById('reply-list-container');
+const replyForm = document.getElementById('reply-form');
+const newReplyText = document.getElementById('new-reply');
 
 // --- Functions ---
 
@@ -33,7 +41,8 @@ let currentReplies = []; // Will hold replies for *this* topic
  * 3. Return the id.
  */
 function getTopicIdFromURL() {
-  // ... your implementation here ...
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
 }
 
 /**
@@ -46,7 +55,28 @@ function getTopicIdFromURL() {
  * 4. (Optional) Add a "Delete" button with `data-id="${topic.id}"` to the OP.
  */
 function renderOriginalPost(topic) {
-  // ... your implementation here ...
+  if (!topic) return;
+
+  if (topicSubject) {
+    topicSubject.textContent = topic.subject || 'Topic Details';
+  }
+
+  if (opMessage) {
+    opMessage.textContent = topic.message || 'No message provided for this topic.';
+  }
+
+  if (opFooter) {
+    const author = topic.author || 'Student';
+    const date = topic.date ? ` on ${topic.date}` : '';
+    opFooter.textContent = `Posted by: ${author}${date}`;
+  }
+
+  if (opActions) {
+    const deleteButton = opActions.querySelector('.delete-btn');
+    if (deleteButton) {
+      deleteButton.dataset.id = topic.id;
+    }
+  }
 }
 
 /**
@@ -58,7 +88,35 @@ function renderOriginalPost(topic) {
  * - Include a "Delete" button with class "delete-reply-btn" and `data-id="${id}"`.
  */
 function createReplyArticle(reply) {
-  // ... your implementation here ...
+  const article = document.createElement('article');
+  article.className = 'reply-card';
+
+  const textParagraph = document.createElement('p');
+  textParagraph.textContent = reply.text || 'No reply text provided.';
+
+  const footer = document.createElement('footer');
+  const author = reply.author || 'Student';
+  const date = reply.date ? ` on ${reply.date}` : '';
+  footer.textContent = `Posted by: ${author}${date}`;
+
+  const actions = document.createElement('div');
+  actions.className = 'reply-actions';
+  const editButton = document.createElement('button');
+  editButton.type = 'button';
+  editButton.className = 'edit-btn';
+  editButton.textContent = 'Edit';
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  deleteButton.className = 'delete-reply-btn';
+  deleteButton.dataset.id = reply.id;
+  deleteButton.textContent = 'Delete';
+  actions.appendChild(editButton);
+  actions.appendChild(deleteButton);
+
+  article.appendChild(textParagraph);
+  article.appendChild(footer);
+  article.appendChild(actions);
+  return article;
 }
 
 /**
@@ -70,7 +128,20 @@ function createReplyArticle(reply) {
  * append the resulting <article> to `replyListContainer`.
  */
 function renderReplies() {
-  // ... your implementation here ...
+  if (!replyListContainer) return;
+  replyListContainer.innerHTML = '';
+
+  if (!currentReplies.length) {
+    const emptyState = document.createElement('p');
+    emptyState.textContent = 'No replies yet. Start the conversation!';
+    replyListContainer.appendChild(emptyState);
+    return;
+  }
+
+  currentReplies.forEach(reply => {
+    const replyArticle = createReplyArticle(reply);
+    replyListContainer.appendChild(replyArticle);
+  });
 }
 
 /**
@@ -92,7 +163,27 @@ function renderReplies() {
  * 7. Clear the `newReplyText` textarea.
  */
 function handleAddReply(event) {
-  // ... your implementation here ...
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  if (!newReplyText) return;
+
+  const replyText = newReplyText.value.trim();
+  if (!replyText) {
+    return;
+  }
+
+  const newReply = {
+    id: `reply_${Date.now()}`,
+    author: 'Student',
+    date: new Date().toISOString().split('T')[0],
+    text: replyText
+  };
+
+  currentReplies = [...currentReplies, newReply];
+  renderReplies();
+  newReplyText.value = '';
 }
 
 /**
@@ -106,7 +197,16 @@ function handleAddReply(event) {
  * 4. Call `renderReplies()` to refresh the list.
  */
 function handleReplyListClick(event) {
-  // ... your implementation here ...
+  const { target } = event;
+  if (!target || !target.classList.contains('delete-reply-btn')) {
+    return;
+  }
+
+  const replyId = target.getAttribute('data-id');
+  if (!replyId) return;
+
+  currentReplies = currentReplies.filter(reply => reply.id !== replyId);
+  renderReplies();
 }
 
 /**
@@ -128,7 +228,64 @@ function handleReplyListClick(event) {
  * 8. If the topic is not found, display an error in `topicSubject`.
  */
 async function initializePage() {
-  // ... your implementation here ...
+  currentTopicId = getTopicIdFromURL();
+  if (!currentTopicId) {
+    if (topicSubject) {
+      topicSubject.textContent = 'Topic not found.';
+    }
+    return;
+  }
+
+  try {
+    const [topicsResponse, repliesResponse] = await Promise.all([
+      fetch('api/topics.json'),
+      fetch('api/comments.json')
+    ]);
+
+    if (!topicsResponse.ok || !repliesResponse.ok) {
+      throw new Error('Failed to load discussion data.');
+    }
+
+    const topicsData = await topicsResponse.json();
+    const repliesData = await repliesResponse.json();
+
+    const topic = Array.isArray(topicsData)
+      ? topicsData.find(item => item.id === currentTopicId)
+      : null;
+
+    const repliesRecord = (repliesData && typeof repliesData === 'object')
+      ? repliesData
+      : {};
+
+    const repliesForTopic = Array.isArray(repliesRecord[currentTopicId])
+      ? repliesRecord[currentTopicId]
+      : [];
+
+    currentReplies = [...repliesForTopic];
+
+    if (!topic) {
+      if (topicSubject) {
+        topicSubject.textContent = 'Topic not found.';
+      }
+      return;
+    }
+
+    renderOriginalPost(topic);
+    renderReplies();
+
+    if (replyForm) {
+      replyForm.addEventListener('submit', handleAddReply);
+    }
+
+    if (replyListContainer) {
+      replyListContainer.addEventListener('click', handleReplyListClick);
+    }
+  } catch (error) {
+    console.error('Error loading topic details', error);
+    if (topicSubject) {
+      topicSubject.textContent = 'Unable to load this topic.';
+    }
+  }
 }
 
 // --- Initial Page Load ---
