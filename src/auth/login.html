@@ -1,88 +1,262 @@
-<!--
-  Requirement: Create a Responsive Login Page
-
-  Instructions:
-  Fill in the HTML elements as described in the comments.
-  Use the provided IDs for the elements that require them.
-  You are encouraged to use a CSS framework for styling, as hinted in the comments,
-  but you can also use your own stylesheet.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- TODO: Add the 'meta' tag to specify the character encoding for the document to be UTF-8. -->
-
-
-    <!-- TODO: Add the 'meta' tag that makes the page responsive.
-         The 'name' should be 'viewport' and the 'content' should set the 'width' to 'device-width'
-         and the 'initial-scale' to '1.0'. -->
-
-
-    <!-- TODO: Add a 'title' for the page. It should be "Login". -->
-
-
-    <!-- TODO: Link to a CSS file or a CSS framework like PicoCSS or Bootstrap to style the page. You can use a CDN link. -->
-
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    
+    <!-- Link to the updated professional CSS -->
+    <link rel="stylesheet" href="../common/loginPage.css"/>
+    <style>
+        /* Additional styles for the tabs */
+        .tabs {
+            display: flex;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-light);
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: var(--spacing-sm);
+            border: none;
+            background: transparent;
+            color: var(--gray-medium);
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-align: center;
+            position: relative;
+            border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+        }
+        
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform var(--transition-normal);
+        }
+        
+        .tab.active {
+            color: var(--primary-dark);
+            background: linear-gradient(135deg, rgba(44, 85, 48, 0.05), rgba(182, 141, 64, 0.05));
+        }
+        
+        .tab.active::after {
+            transform: scaleX(1);
+        }
+        
+        .tab:hover:not(.active) {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(44, 85, 48, 0.02), rgba(182, 141, 64, 0.02));
+        }
+        
+        /* Auth view management */
+        .auth-view {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Message containers */
+        .message {
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            margin-top: var(--spacing-md);
+            display: none;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .message.success {
+            background: linear-gradient(135deg, rgba(74, 156, 109, 0.1), rgba(74, 156, 109, 0.05));
+            color: var(--success-color);
+            border: 1px solid rgba(74, 156, 109, 0.2);
+        }
+        
+        .message.error {
+            background: linear-gradient(135deg, rgba(196, 69, 54, 0.1), rgba(196, 69, 54, 0.05));
+            color: var(--danger-color);
+            border: 1px solid rgba(196, 69, 54, 0.2);
+        }
+        
+        /* Small text and links */
+        .small {
+            font-size: 0.85rem;
+            margin-top: var(--spacing-md);
+            text-align: center;
+            color: var(--gray-medium);
+        }
+        
+        .link {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: color var(--transition-fast);
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        .link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--secondary-color);
+            transition: width var(--transition-normal);
+        }
+        
+        .link:hover {
+            color: var(--secondary-color);
+        }
+        
+        .link:hover::after {
+            width: 100%;
+        }
+        
+        /* Divider */
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gray-light), transparent);
+            margin: var(--spacing-lg) 0;
+        }
+        
+        /* Reset form specific */
+        #reset-form fieldset:last-of-type {
+            margin-top: var(--spacing-lg);
+        }
+    </style>
 </head>
-<body <!-- TODO: Add any styling to the 'body' tag to center the login form on the page. -->>
+<body>
+    <main class="login-container">
+        <section class="login-card">
+            <!-- Login Icon -->
+            <div class="login-icon">
+                <span>🔐</span>
+            </div>
+            
+            <h2>Welcome Back!</h2>
+            
+            <!-- Tab Navigation -->
+            <div class="tabs" role="tablist" aria-label="Authentication Tabs">
+                <div class="tab active" data-view="login" role="tab" aria-selected="true">Login</div>
+                <div class="tab" data-view="register" role="tab" aria-selected="false">Register</div>
+                <div class="tab" data-view="reset" role="tab" aria-selected="false">Reset Password</div>
+            </div>
 
-    <!-- This will be the main content area of the page. -->
-    <!-- TODO: Use the 'main' element to contain the login form, as it represents the primary content of the document. -->
-
-        <!-- This 'section' groups the related content of the login form. -->
-        <!-- TODO: Create a 'section' element to act as the login card. -->
-
-            <!-- The heading of the login form -->
-            <!-- TODO: Add a heading element (e.g., 'h1' or 'h2') for the form's title. The text should be "Welcome Back!". -->
-
-
-            <!-- The form element will wrap all the inputs. -->
-            <!-- TODO: Create a 'form' element. The 'action' can be '#' for now. -->
-
-                <!-- TODO: Use a 'fieldset' to group all the related controls for the login form. -->
+            <!-- LOGIN FORM -->
+            <form action="#" id="login-form" data-view="login" class="auth-view">
+                <fieldset>
+                    <legend>Secure Login</legend>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address:</label>
+                        <input type="email" id="email" name="email" required autocomplete="email" placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" minlength="8" required autocomplete="current-password" placeholder="Enter your password">
+                    </div>
+                    
+                    <button type="submit" id="login">Log In</button>
+                </fieldset>
                 
-                    <!-- TODO: Add a 'legend' to caption the fieldset. e.g., "Secure Login". This improves accessibility. -->
-
-                    <!-- TODO: Add a 'label' for the email input field.
-                         The 'for' attribute should be "email".
-                         The text should be "Email Address". -->
-
-
-                    <!-- TODO: Add an 'input' field for the email.
-                         - The type should be "email".
-                         - The id must be "email".
-                         - It should be a required field. -->
-
-
-                    <!-- TODO: Add a 'label' for the password input field.
-                         The 'for' attribute should be "password".
-                         The text should be "Password". -->
-
-
-                    <!-- TODO: Add an 'input' field for the password.
-                         - The type should be "password".
-                         - The id must be "password".
-                         - It should be a required field.
-                         - For validation, add a 'minlength' attribute (e.g., minlength="8"). -->
+                <div id="message-container" aria-live="polite" class="message" style="display:none"></div>
                 
+                <div class="small">Forgot password? <span class="link" id="goto-reset">Reset here</span></div>
+            </form>
 
-                    <!-- This is the form submission button. -->
-                    <!-- TODO: Add a 'button' to submit the form, inside the fieldset.
-                         - The type should be "submit".
-                         - The id must be "login".
-                         - The text should be "Log In". -->
+            <!-- REGISTER FORM -->
+            <form action="#" id="register-form" data-view="register" class="auth-view" style="display:none">
+                <fieldset>
+                    <legend>Create Account</legend>
+                    
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" name="name" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" name="email" required placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" name="password" minlength="8" required placeholder="Create a password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-password-confirm">Confirm Password</label>
+                        <input type="password" id="reg-password-confirm" name="password_confirm" minlength="8" required placeholder="Confirm your password">
+                    </div>
+                    
+                    <button type="submit" id="register">Create Account</button>
+                </fieldset>
                 
-                <!-- End of the fieldset. -->
+                <div id="register-message" aria-live="polite" class="message" style="display:none"></div>
+                <div class="small">Already have an account? <span class="link" id="goto-login">Login</span></div>
+            </form>
 
+            <!-- RESET PASSWORD FORM -->
+            <form action="#" id="reset-form" data-view="reset" class="auth-view" style="display:none">
+                <fieldset>
+                    <legend>Password Reset</legend>
+                    
+                    <div class="form-group">
+                        <label for="reset-email">Enter your account email</label>
+                        <input type="email" id="reset-email" name="email" required placeholder="Enter your registered email">
+                    </div>
+                    
+                    <button type="submit" id="reset-request">Request Reset Token</button>
+                </fieldset>
+                
+                <div id="reset-message" aria-live="polite" class="message" style="display:none"></div>
+                
+                <hr>
+                
+                <fieldset>
+                    <legend>Confirm Reset</legend>
+                    
+                    <div class="form-group">
+                        <label for="reset-token">Reset Token</label>
+                        <input type="text" id="reset-token" name="token" placeholder="Enter reset token">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reset-new-password">New Password</label>
+                        <input type="password" id="reset-new-password" name="new_password" minlength="8" placeholder="Enter new password">
+                    </div>
+                    
+                    <button type="button" id="reset-confirm">Confirm Reset</button>
+                </fieldset>
+                
+                <div class="small">Remembered your password? <span class="link" id="goto-login-2">Login</span></div>
+            </form>
+        </section>
+    </main>
 
-            <!-- End of the form element. -->
-
-
-        <!-- End of the login section. -->
-
-    <!-- End of the main content area. -->
-
+    <script src="login.js" defer></script>
 </body>
 </html>
-

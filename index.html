@@ -1,10 +1,17 @@
+<!--
+  Requirement: Create the Course Homepage
+
+  Instructions:
+  This page will serve as the main entry point to the course website.
+  It should contain a simple navigation menu with links to all the key pages.
+-->
 <!DOCTYPE html>
 <html lang="en">
      <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Web Dev Course Homepage</title>
-          <link rel="stylesheet" href="style.css">
+          <link rel="stylesheet" href="src/common/homePage.css">
      </head>
      <body>
           <header>
@@ -20,15 +27,15 @@
                <nav aria-label="Main navigation">
                     <h2>Site Navigation</h2>
                     <ul>
-                         <li><a href="login.html">Login</a></li>
-                         <li><a href="admin_portal.html">Admin Portal (Manage Students)</a></li>
-                         <li><a href="admin_resources.html">Admin: Manage Resources</a></li>
-                         <li><a href="admin_weekly_breakdown.html">Admin: Manage Weekly Breakdown</a></li>
-                         <li><a href="admin_assignments.html">Admin: Manage Assignments</a></li>
-                         <li><a href="student_resources.html">View Course Resources</a></li>
-                         <li><a href="student_weekly_breakdown.html">View Weekly Breakdown</a></li>
-                         <li><a href="student_assignments.html">View Assignments</a></li>
-                         <li><a href="discussion_board.html">General Discussion Board</a></li>
+                         <li><a href="src/auth/login.html">Login</a></li>
+                         <li><a href="src/admin/manage_users.html">Admin Portal (Manage Students)</a></li>
+                         <li><a href="src/resources/admin.html">Admin: Manage Resources</a></li>
+                         <li><a href="src/weekly/admin.html">Admin: Manage Weekly Breakdown</a></li>
+                         <li><a href="src/assignments/admin.html">Admin: Manage Assignments</a></li>
+                         <li><a href="src/resources/list.html">View Course Resources</a></li>
+                         <li><a href="src/weekly/list.html">View Weekly Breakdown</a></li>
+                         <li><a href="src/assignments/list.html">View Assignments</a></li>
+                         <li><a href="src/discussion/baord.html">General Discussion Board</a></li>
                     </ul>
                </nav>
           </main>
