@@ -52,6 +52,14 @@ if (session_status() === PHP_SESSION_NONE) {
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+if (!isset($_SERVER['REQUEST_METHOD'])) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Invalid request method'
+    ]);
+    exit;
+}
 
 
 
@@ -108,8 +116,10 @@ if (class_exists('Database')) {
 // TODO: Get the HTTP request method
 // Use $_SERVER['REQUEST_METHOD']
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
+$rawBody = file_get_contents('php://input');
+$body = json_decode($rawBody, true);
+$requestData = is_array($body) ? $body : [];
+
 
 // TODO: Get the request body for POST and PUT requests
 // Use file_get_contents('php://input') to get raw POST data
@@ -537,8 +547,10 @@ function getCommentsByWeek($db, $weekId) {
 
     // TODO: Return JSON response with success status and data
     // Even if no comments exist, return an empty array
-        return jsonResponse(true, $comments);
-
+return sendResponse([
+    'success' => true,
+    'data' => $comments
+]);
 }
 
 
@@ -705,7 +717,8 @@ try {
             getCommentsByWeek($db, $weekId);
         } elseif ($method === 'POST') {
             // TODO: Call createComment() with the decoded request body
-                            createComment($db, $data);
+                                createComment($db, $requestData);
+
 
         } elseif ($method === 'DELETE') {
             // TODO: Get comment id from query parameter or request body
