@@ -184,8 +184,9 @@ async function initializePage() {
   }
   try {
     const [assignmentsResponse, commentsResponse] = await Promise.all([
-      fetch('api/assignments.json'),
-      fetch('api/comments.json')
+      fetch('assignments.json'),
+fetch('comments.json')
+
     ]);
 
     const assignments = await assignmentsResponse.json();
